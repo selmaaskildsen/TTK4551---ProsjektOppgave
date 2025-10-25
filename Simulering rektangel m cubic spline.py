@@ -68,11 +68,10 @@ def stanley_control(x, y, theta, path_x, path_y, path_yaw, k, v):
 # Diskrete veipunkter
 waypoints = np.array([
     [0, 0],
-    [20, 0],
-    [40, 10],
-    [60, 0],
-    [80, -10],
-    [100, 0]
+    [10, 0],
+    [20, 10],
+    [30, 10],
+    [40, 0],
 ])
 x_wp = waypoints[:, 0]
 y_wp = waypoints[:, 1]
@@ -89,12 +88,12 @@ path_yaw = np.arctan2(dy, np.ones_like(dy))  # tangentretning
 # ---------------------------------------------------------------
 # --- Simulering ---
 # ---------------------------------------------------------------
-model = BicycleModel(L=2.7, dt=0.02, x0=0, y0=-1, theta0=0)
+model = BicycleModel(L=2.7, dt=0.02, x0=0, y0=0, theta0=0)
 v = 10.0  # m/s
 k = 1.0   # Stanley gain
 
 history_x, history_y = [], []
-N = 2000
+N = 200
 
 for i in range(N):
     x, y, th = model.state

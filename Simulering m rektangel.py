@@ -67,14 +67,15 @@ class StanleyController:
 if __name__ == "__main__":
 
     # Lag veipunkter (rektangel)
-    waypoints = np.array([[0,0],[5,0],[10,0],[15,0],[20,0],[20,2.5],[20,5],[20,7.5],[20,10],[15,10],[10,10],[5,10],[0,10],[0,7.5],[0,5],[0,2.5],[0,0]])
+    waypoints = np.array([[0,0],[5,0],[10,0],[15,0],[20,0],[20,2.5],[20,5],[20,7.5],[20,10],
+                          [15,10],[10,10],[5,10],[0,10],[0,7.5],[0,5],[0,2.5],[0,0]])
     model = BicycleModel()
     ctrl = StanleyController(k=0.8) 
 
-    v = 10.0
+    v = 1.0
     log = {"x":[],"y":[],"cte":[],"psi":[],"delta":[]}
     
-    for _ in range(150):
+    for _ in range(2000):
         delta, e, psi = ctrl.control(model.state, waypoints, v)
         x,y,th = model.rk4_step(delta, v)
 
