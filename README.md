@@ -1,2 +1,9 @@
-# TTK4551---ProsjektOppgave
-Project work in TTK4551 – Industrial Cybernetics at NTNU. Focus on modelling, control, and simulation of autonomous vehicles using the bicycle model and path-following algorithms.
+# TTK4551 – Project on Autonomous Vehicles
+
+This repository contains the project work for the course **TTK4551 – Industrial Cybernetics** at NTNU.  
+The focus of the project is **modelling, control and simulation** of an autonomous vehicle using the **bicycle model** and various **path-following algorithms**.
+
+## 📂 Contents
+- `Simulering m rektangel.py` – First try to implement the bicycle model, stanley controller and RK4 to simulate a car following a path shaped as a rectangle. So far it struggles as it comes to the midpoint between the first two points. After a discussion with Peder he mentioned that Stanley controller might have a hard time with sharp turns, such as this 90 degree turn. This happens if I only have a waypoint at each corner, or if I make each side consist of 5 waypoints. Then, the model follows the path well, until it reaches the midpoint between a corner and the waypoint before.
+- `Simulering rektangel m cubic spline.py` – Have tried to expand on the file 'Simulering m rektangel.py' adding cubic spline to make the turns smoother. The controller keeps the car on the desired path in the beginning, but begins to stray of course after some time.
+- `Cubic spline generator.py` - Made a file that just focused on making the desired path using cubic spline interpolation. It uses the already incorporated **CubicSpline** in python. It works very well, on all types of waypoints put in manually by the user. 
