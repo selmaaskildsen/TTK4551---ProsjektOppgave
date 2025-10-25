@@ -3,10 +3,10 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import CubicSpline
 
 # --- Define Waypoint ---
-x_points = np.array([0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50])
-y_points = np.array([0, 0, 0, 0, 0, 5, 10, 10, 10, 10, 10])
-x_points = np.array([0, 10, 20, 30, 40, 50])
-y_points = np.array([0, 3, 20, 7, -1, 0])
+x_points = np.array([0, 5, 10, 15, 20, 20, 20, 20, 20, 15, 10, 5, 0, 0, 0, 0, 0])
+y_points = np.array([0, 0, 0, 0, 0, 2, 4, 6, 8, 10, 10, 10, 10, 10, 8, 6, 4, 2, 0])
+#x_points = np.array([0, 10, 20, 30, 40, 50])
+#y_points = np.array([0, 3, 20, 7, -1, 0])
 #x_points = np.array([0, 10, 20, 30, 40, 50])
 #y_points = np.array([0, 0, 0, 0, 0, 0])
 
