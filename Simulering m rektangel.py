@@ -49,7 +49,7 @@ class StanleyController:
         x, y, th = state
         
         # Finn nærmeste punkt
-        dists = np.sum((path - np.array([x,y]))**2, axis=1)
+        dists = np.sum((path - np.array([x,y]))**2, axis=0)
         i = np.argmin(dists)
         target = path[min(i+1, len(path)-1)]
         path_dir = np.arctan2(target[1]-path[i,1], target[0]-path[i,0])
@@ -67,8 +67,10 @@ class StanleyController:
 if __name__ == "__main__":
 
     # Lag veipunkter (rektangel)
-    waypoints = np.array([[0,0],[5,0],[10,0],[15,0],[20,0],[20,2.5],[20,5],[20,7.5],[20,10],
-                          [15,10],[10,10],[5,10],[0,10],[0,7.5],[0,5],[0,2.5],[0,0]])
+    waypoints = np.array([[0,0],[20,0],
+                          [20,10],
+                           [0,10],
+                           [0,0]])
     model = BicycleModel()
     ctrl = StanleyController(k=0.8) 
 

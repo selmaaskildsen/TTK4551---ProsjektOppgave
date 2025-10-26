@@ -1,44 +1,45 @@
 import requests
 import numpy as np
+import matplotlib.pyplot as plt
+from scipy.interpolate import CubicSpline
+import pandas as pd
+import json
 
-def hent_veglenkesekvens(veglenkesekvensid: int):
-    """
-    Henter geometri (x, y) for en veglenkesekvens fra NVDB API v4.
-    
-    Parametre:
-        veglenkesekvensid : int
-            Unik ID for veglenkesekvensen (fra NVDB)
-    
-    Returnerer:
-        numpy.ndarray med form (N, 2) der hver rad er [x, y]
-    """
-    
-    url = f"https://nvdbapi.vegdata.no/v4/vegnett/veglenkesekvenser/{veglenkesekvensid}"
-    headers = {
-        "Accept": "application/vnd.vegvesen.nvdb-v4+json",
-        "X-Client": "selma-prosjektoppgave@example.com"
-    }
 
-    resp = requests.get(url, headers=headers)
-    if resp.status_code != 200:
-        raise Exception(f"Feil ved henting ({resp.status_code}): {resp.text}")
+url = "https://nvdbapiles.atlas.vegvesen.no/vegnett/api/v4/veglenkesekvenser?vegsystemreferanse=KV1699&kommune=3201"
 
-    data = resp.json()
-    coords = []
+# --- 2. Hent veglenkesekvenser ---
+resp = requests.get(url) 
+resp.raise_for_status()
+data = resp.json()
 
-    # Hent alle geometrier for hver veglenke i sekvensen
-    for link in data.get("veglenker", []):
-        geom = link.get("geometri", {}).get("wkt")
+#print(data["objekter"][0])
+#print(json.dumps(data["objekter"][0], indent=2))
+
+vei = []
+
+for item in data["objekter"]:
+    veglenker = item["veglenker"]
+    for veglenke in veglenker:
+        geom = veglenke["geometri"]["wkt"]
         if geom and geom.startswith("LINESTRING"):
-            # Fjern tekst og splitt koordinatene
-            pts = geom.replace("LINESTRING Z (", "").replace("LINESTRING (", "").replace(")", "").split(", ")
+            pts = geom.replace("LINESTRING Z (", "").replace("LINESTRING (", "").replace(")", "").split(",")
             for p in pts:
                 parts = p.split()
-                x, y = float(parts[0]), float(parts[1])
-                coords.append((x, y))
+                x, y, z = parts
+                vei.append((float(x), float(y), float(z)))
+    #print(type(item["veglenker"]))
+    #print(json.dumps(item["veglenker"][0]["geometri"]["wkt"], indent=2))
+    #print(item["veglenker"][0]["geometri"]["wkt"])
 
-    if not coords:
-        print(f"Ingen koordinater funnet for {veglenkesekvensid}.")
-        return np.empty((0, 2))
+for punkt in vei:
+    x, y, z = punkt
+    print(f"x: {x}, y: {y}, z: {z}")
 
-    return np.array(coords)
+x = np.array([punkt[0] for punkt in vei])
+y = np.array([punkt[1] for punkt in vei])
+
+plt.plot(x, y, '.')
+plt.show()
+
+

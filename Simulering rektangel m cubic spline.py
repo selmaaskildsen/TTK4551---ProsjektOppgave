@@ -11,7 +11,7 @@ from scipy.interpolate import CubicSpline
 # --- Vehicle Model ---
 # ---------------------------------------------------------------
 class BicycleModel:
-    def __init__(self, L=2.7, dt=0.02, x0=0, y0=0, theta0=0):
+    def __init__(self, L=2.7, dt=0.02, x0=0, y0=0, theta0=np.pi/4):
         self.L = L
         self.dt = dt
         self.state = np.array([x0, y0, theta0])  # [x, y, theta]
@@ -68,10 +68,8 @@ def stanley_control(x, y, theta, path_x, path_y, path_yaw, k, v):
 # Diskrete veipunkter
 waypoints = np.array([
     [0, 0],
-    [10, 0],
-    [20, 10],
-    [30, 10],
-    [40, 0],
+    [5, 5],
+    [35, 10],
 ])
 x_wp = waypoints[:, 0]
 y_wp = waypoints[:, 1]
@@ -88,12 +86,12 @@ path_yaw = np.arctan2(dy, np.ones_like(dy))  # tangentretning
 # ---------------------------------------------------------------
 # --- Simulering ---
 # ---------------------------------------------------------------
-model = BicycleModel(L=2.7, dt=0.02, x0=0, y0=0, theta0=0)
-v = 10.0  # m/s
-k = 1.0   # Stanley gain
+model = BicycleModel(L=2.7, dt=0.02, x0=0, y0=0, theta0=np.pi/4)
+v = 1.0  # m/s
+k = 1.2   # Stanley gain
 
 history_x, history_y = [], []
-N = 200
+N = 2000
 
 for i in range(N):
     x, y, th = model.state
