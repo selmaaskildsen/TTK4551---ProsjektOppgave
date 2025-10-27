@@ -14,6 +14,10 @@ The focus of the project is **modelling, control and simulation** of an autonomo
 - `Cubic spline generator.py` - Made a file that just focused on making the desired path using cubic spline interpolation. It uses the already incorporated **CubicSpline** in python. It works very well, on all types of waypoints put in manually by the user. **OBS**: Make sure you don't put in the same point after eachother. Then the code does not work. There must be some change in distance. When trying to interpolate a rectangle, the more points it has, the better it becomes. With only waypoints at the corners, the path look more like a circle than a rectangle, even though it touches at every waypoint. It also helps adding more waypoints closer to each other when there is a sharp turn. That way the path doesn't overshoot too much in the turns.
 
 - `Extracting waypoints NVDB.py` - Trying to extract data from the NVDB databank to get waypoints to generate a path. Not too much luck so far.
+  
+  Update: able to extract the data points for "Kalkbrennerveien 9" and plot it. It looks fairy similar.
+  
+  Next: Try and plot other road segments and compare to maps. Use the data points to make path using cubic spline.
 
 - `NVDB Testing.py` - Another file to try and test extracting the data from NVDB. Most for testing if the new code works.
   
