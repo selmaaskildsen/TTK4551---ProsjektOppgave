@@ -68,13 +68,10 @@ class StanleyController:
 if __name__ == "__main__":
 
     # Lag veipunkter
-    '''waypoints = np.array([[0,0],[5,0],[10,0],[15,0],[20,0],
-                          [20,2.5],[20,5],[20,7.5],[20,10],
-                          [15,10],[10,10],[5,10],[0,10],
-                          [0,7.5],[0,5],[0,2.5],[0,0]])'''
-    waypoints = np.array([[0,0],[10,5],[20,10],[30,5],[40,0],[50,5]])
+    
+    waypoints = np.array([[0,0],[20,0],[20,10],[0,10],[0,0]])
     model = BicycleModel()
-    ctrl = StanleyController(k=1.5) 
+    ctrl = StanleyController(k=1.2) 
 
     v = 1.0
     log = {"x":[],"y":[],"cte":[],"psi":[],"delta":[]}
@@ -91,7 +88,7 @@ if __name__ == "__main__":
 plt.figure(); plt.plot(waypoints[:,0], waypoints[:,1],'ro--',label="Path")
 plt.plot(log["x"], log["y"],'b',label="Vehicle"); plt.legend(); plt.axis("equal")
 
-plt.figure(); plt.plot(log["cte"]); plt.title("Cross-Track Error")
-plt.figure(); plt.plot(log["psi"]); plt.title("Heading Error")
-plt.figure(); plt.plot(np.rad2deg(log["delta"])); plt.title("Steering [deg]")
+#plt.figure(); plt.plot(log["cte"]); plt.title("Cross-Track Error")
+#plt.figure(); plt.plot(log["psi"]); plt.title("Heading Error")
+#plt.figure(); plt.plot(np.rad2deg(log["delta"])); plt.title("Steering [deg]")
 plt.show()
