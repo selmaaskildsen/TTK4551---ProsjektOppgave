@@ -39,8 +39,8 @@ for punkt in vei:
 x = np.array([punkt[0] for punkt in vei])
 y = np.array([punkt[1] for punkt in vei])
 
-plt.savefig("Figures/kalkbrennerveien_plot.png", dpi=300, bbox_inches='tight')
 plt.plot(x, y, '.')
+plt.savefig("Figures/kalkbrennerveien_plot.png", dpi=300, bbox_inches='tight')
 plt.show()
 
 
