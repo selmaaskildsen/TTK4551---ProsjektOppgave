@@ -34,11 +34,12 @@ for item in data["objekter"]:
 
 for punkt in vei:
     x, y, z = punkt
-    print(f"x: {x}, y: {y}, z: {z}")
+    #print(f"x: {x}, y: {y}, z: {z}")
 
 x = np.array([punkt[0] for punkt in vei])
 y = np.array([punkt[1] for punkt in vei])
 
+plt.savefig("Figures/kalkbrennerveien_plot.png", dpi=300, bbox_inches='tight')
 plt.plot(x, y, '.')
 plt.show()
 
