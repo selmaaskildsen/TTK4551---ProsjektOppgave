@@ -1,78 +1,90 @@
+"""
+Henter og plotter veg fra NVDB.
+Setter startpunkt (m0) som origo, og slår sammen alle sekvenser i riktig rekkefølge.
+"""
+
+import os
 import requests
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.interpolate import CubicSpline
+from shapely import wkt
 import pandas as pd
 import json
 
-# -------------------------------
-# 1. KONFIGURASJON
-# -------------------------------
-VEGSYSTEM = "KV1699"   # Kommunal vegnummer (f.eks. Kalkbrennerveien)
-KOMMUNE = "3201"       # Oslo kommune
-# -------------------------------
-
-# --- NVDB API v4 endepunkt ---
-#url = "https://nvdbapi.vegdata.no/vegnett/api/v4/veglenkesekvenser"
-url = "https://nvdbapiles.atlas.vegvesen.no/vegnett/api/v4/veglenkesekvenser?vegsystemreferanse=KV1699&kommune=3201"
+# -------------------------------------------------------
+# 1. API-kall til NVDB
+# -------------------------------------------------------
+url = "https://nvdbapiles.atlas.vegvesen.no/vegnett/api/v4/veglenkesekvenser"
 params = {
-    "filter": [f"vegsystemreferanse:{VEGSYSTEM}", f"kommune:{KOMMUNE}"],
-    "inkluder": "geometri"
-}
-headers = {
-    "Accept": "application/vnd.vegvesen.nvdb-v4+json",
-    "X-Client": "selmaaskildsen@stud.ntnu.no"
+    "vegsystemreferanse": "KV1699",  # Kalkbrennerveien
+    "kommune": "3201"                # Bærum
 }
 
-# --- 2. Hent veglenkesekvenser ---
-resp = requests.get(url)#, params=params)#, headers=headers)
+resp = requests.get(url, params=params)
 resp.raise_for_status()
 data = resp.json()
-#print(data["objekter"][0])
-#print(json.dumps(data["objekter"][0], indent=2))
-# --- 3. Hent ut alle koordinater fra alle lenker ---
-coords = []
-for entry in data["objekter"]:
-    print(entry.keys())
-    print(type(entry["veglenker"]))
-    exit(0)
-    """for seq in data["objekter"].get("veglenkesekvenser", []):
-        for link in seq.get("veglenker", []):
-            geom = link.get("geometri", {}).get("wkt")
-            if geom and geom.startswith("LINESTRING"):
-                pts = geom.replace("LINESTRING Z (", "").replace("LINESTRING (", "").replace(")", "").split(", ")
-                for p in pts:
-                    parts = p.split()
-                    x, y = float(parts[0]), float(parts[1])
-                    coords.append((x, y))"""
 
-if not coords:
-    raise RuntimeError("Fant ingen koordinater. Sjekk vegsystemreferanse eller kommune.")
+if "objekter" not in data or len(data["objekter"]) == 0:
+    raise ValueError("Ingen objekter funnet. Sjekk vegsystemreferanse eller kommune.")
 
-coords = np.array(coords)
+# -------------------------------------------------------
+# 2. Hent og sorter veglenker etter startposisjon
+# -------------------------------------------------------
+alle_segmenter = []
 
-# --- 4. Sortér punkter etter x (for spline) ---
-order = np.argsort(coords[:, 0])
-x, y = coords[order, 0], coords[order, 1]
+for item in data["objekter"]:
+    for veglenke in item["veglenker"]:
+        geom = veglenke["geometri"]["wkt"]
+        if not geom or not geom.startswith("LINESTRING"):
+            continue
 
-# --- 5. Generér jevn Cubic Spline ---
-cs = CubicSpline(x, y)
-x_smooth = np.linspace(x.min(), x.max(), 500)
-y_smooth = cs(x_smooth)
+        # hent startposisjon, default=0 om ikke finnes
+        startpos = veglenke.get("startposisjon", 0)
+        line = wkt.loads(geom)
+        x, y = line.xy
+        segment = list(zip(x, y))
+        alle_segmenter.append((startpos, segment))
 
-# --- 6. Plot originaldata + spline ---
-plt.figure(figsize=(7,5))
-plt.plot(x, y, 'o', label='NVDB punkter')
-plt.plot(x_smooth, y_smooth, '-', label='Cubic Spline (bane)')
-plt.title(f"Bane generert fra NVDB-data ({VEGSYSTEM})")
-plt.xlabel("x [m] (UTM33)")
-plt.ylabel("y [m] (UTM33)")
+# Sorter etter startposisjon langs vegen
+alle_segmenter.sort(key=lambda s: s[0])
+
+# Slå sammen alle punkter i rekkefølge
+vei = [p for _, segment in alle_segmenter for p in segment]
+
+# -------------------------------------------------------
+# 3. Konverter til NumPy og normaliser (sett m0 = origo)
+# -------------------------------------------------------
+x = np.array([p[0] for p in vei])
+y = np.array([p[1] for p in vei])
+
+x0, y0 = x[0], y[0]
+x -= x0
+y -= y0
+
+print(f"Origo satt til (x0, y0) = ({x0:.1f}, {y0:.1f})")
+
+# -------------------------------------------------------
+# 4. Lagre koordinater til CSV
+# -------------------------------------------------------
+os.makedirs("Figures", exist_ok=True)
+df = pd.DataFrame({"x": x, "y": y})
+csv_path = "Figures/kalkbrennerveien_points.csv"
+df.to_csv(csv_path, index=False)
+print(f"Koordinater lagret til: {csv_path}")
+
+# -------------------------------------------------------
+# 5. Plot bane
+# -------------------------------------------------------
+plt.figure(figsize=(7,6))
+plt.plot(x, y, '-', linewidth=1)
 plt.axis('equal')
-plt.legend()
+plt.xlabel("x [m]")
+plt.ylabel("y [m]")
+plt.title("Kalkbrennerveien – NVDB-data (m0 som origo)")
 plt.grid(True)
+
+fig_path = "Figures/kalkbrennerveien_plot.png"
+#plt.savefig(fig_path, dpi=300, bbox_inches='tight')
 plt.show()
 
-# --- 7. (Valgfritt) lagre banen ---
-path = np.column_stack((x_smooth, y_smooth))
-pd.DataFrame(path, columns=["x", "y"]).to_csv("bane_nvdb.csv", index=False)
-print(f"✅ Lagret {len(path)} punkter til 'bane_nvdb.csv'")
+print(f"Plot lagret til: {fig_path}")
