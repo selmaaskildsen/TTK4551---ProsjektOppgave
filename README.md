@@ -28,6 +28,8 @@ The focus of the project is **modelling, control and simulation** of an autonomo
 
 - `NVDB Testing.py` - Another file to try and test extracting the data from NVDB. Most for testing if the new code works.
 
+### Figures: Plots and figures made
+
 ### Simulation: Files containing simulations
 
 - `Simulering baseline.py` – First try to implement the bicycle model, stanley controller and RK4 to simulate a car following a path shaped as a rectangle. So far it struggles as it comes to the midpoint between the first two points. After a discussion with Peder he mentioned that Stanley controller might have a hard time with sharp turns, such as this 90 degree turn. This happens if I only have a waypoint at each corner, or if I make each side consist of 5 waypoints. Then, the model follows the path well, until it reaches the midpoint between a corner and the waypoint before.
