@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from scipy.interpolate import CubicSpline
 
 # --- Define Waypoint ---
-
+'''
 x_points = np.array([
 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
 20, 20, 20, 20, 20, 20, 20, 20, 20, 20,
@@ -17,11 +17,11 @@ y_points = np.array([
 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10,
 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
 ])
+'''
 
-'''
-x_points = np.array([0, 2.5, 5])
-y_points = np.array([0, 1.5, 2])
-'''
+x_points = np.array([0, 2.5, 5, 7.5, 10, 12.5])
+y_points = np.array([0, 1.5, 2, 1.5, 0, -1.5])
+
 # --- Make parameters---
 dist = np.zeros(len(x_points))
 for i in range(1, len(x_points)):

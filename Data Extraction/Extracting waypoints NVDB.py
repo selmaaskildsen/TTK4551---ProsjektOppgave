@@ -84,7 +84,7 @@ plt.title("Kalkbrennerveien – NVDB-data (m0 som origo)")
 plt.grid(True)
 
 fig_path = "Figures/kalkbrennerveien_plot.png"
-#plt.savefig(fig_path, dpi=300, bbox_inches='tight')
+plt.savefig(fig_path, dpi=300, bbox_inches='tight')
 plt.show()
 
 print(f"Plot lagret til: {fig_path}")

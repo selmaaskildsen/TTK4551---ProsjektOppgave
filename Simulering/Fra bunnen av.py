@@ -47,24 +47,7 @@ def stanley_control(state, path, v, k):
 if __name__ == "__main__":
     # Definer veipunkter (rektangel)
     waypoints = np.array([
-        [0, 0],
-        [5, 0],
-        [10, 0],
-        [15, 0],
-        [20, 0],
-        [20,2.5],
-        [20, 5],
-        [20, 7.5],
-        [20, 10],
-        [15, 10],
-        [10, 10],
-        [5, 10],
-        [0, 10],
-        [0, 7.5],
-        [0, 5],
-        [0, 2.5],
-        [0,0],
-        [0, 0]
+        [0, 0], [20, 0], [20, 10], [0, 10], [0, 0]
     ])
 
     # Parametre
@@ -85,7 +68,7 @@ if __name__ == "__main__":
     min_steps_before_stop = 50  # vent litt før du får stoppe
 
     # --- Simulasjonsløkke ---
-    for step in range(10000):
+    for step in range(9000):
         delta, e, psi = stanley_control(state, waypoints, v, k)
         state = rk4_step(state, delta, v, L, dt)
         x, y, th = state
@@ -112,8 +95,10 @@ if __name__ == "__main__":
         plt.plot(log["x"], log["y"], 'bo', label="Vehicle")
 
     # Marker start og stopp
+    """
     plt.plot(log["x"][0], log["y"][0], 'go', label="Start")
     plt.plot(log["x"][-1], log["y"][-1], 'kx', label="Stop")
+    """
 
     plt.legend()
     plt.axis("equal")
