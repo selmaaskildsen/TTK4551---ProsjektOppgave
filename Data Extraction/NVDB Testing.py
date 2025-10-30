@@ -16,7 +16,7 @@ import json
 # -------------------------------------------------------
 url = "https://nvdbapiles.atlas.vegvesen.no/vegnett/api/v4/veglenkesekvenser"
 params = {
-    "vegsystemreferanse": "KV1699",  # Kalkbrennerveien
+    "vegsystemreferanse": "KV1698",  # Kalkbrennerveien
     "kommune": "3201"                # Bærum
 }
 
@@ -69,7 +69,7 @@ print(f"Origo satt til (x0, y0) = ({x0:.1f}, {y0:.1f})")
 # -------------------------------------------------------
 os.makedirs("Figures", exist_ok=True)
 df = pd.DataFrame({"x": x, "y": y})
-csv_path = "Figures/kalkbrennerveien_original_points.csv"
+csv_path = "Figures/rytterfaret_original_points.csv"
 df.to_csv(csv_path, index=False)
 print(f"Koordinater lagret til: {csv_path}")
 
@@ -81,10 +81,10 @@ plt.plot(x, y, '-', linewidth=1)
 plt.axis('equal')
 plt.xlabel("x [m]")
 plt.ylabel("y [m]")
-plt.title("Kalkbrennerveien – NVDB-data")
+plt.title("Rytterfaret – NVDB-data")
 plt.grid(True)
 
-fig_path = "Figures/kalkbrennerveien_original_plot.png"
+fig_path = "Figures/rytterfaret_original_plot.png"
 plt.savefig(fig_path, dpi=300, bbox_inches='tight')
 plt.show()
 
