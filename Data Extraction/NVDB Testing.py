@@ -57,18 +57,19 @@ vei = [p for _, segment in alle_segmenter for p in segment]
 x = np.array([p[0] for p in vei])
 y = np.array([p[1] for p in vei])
 
+"""
 x0, y0 = x[0], y[0]
 x -= x0
 y -= y0
 
 print(f"Origo satt til (x0, y0) = ({x0:.1f}, {y0:.1f})")
-
+"""
 # -------------------------------------------------------
 # 4. Lagre koordinater til CSV
 # -------------------------------------------------------
 os.makedirs("Figures", exist_ok=True)
 df = pd.DataFrame({"x": x, "y": y})
-csv_path = "Figures/kalkbrennerveien_points.csv"
+csv_path = "Figures/kalkbrennerveien_original_points.csv"
 df.to_csv(csv_path, index=False)
 print(f"Koordinater lagret til: {csv_path}")
 
@@ -80,11 +81,11 @@ plt.plot(x, y, '-', linewidth=1)
 plt.axis('equal')
 plt.xlabel("x [m]")
 plt.ylabel("y [m]")
-plt.title("Kalkbrennerveien – NVDB-data (m0 som origo)")
+plt.title("Kalkbrennerveien – NVDB-data")
 plt.grid(True)
 
-fig_path = "Figures/kalkbrennerveien_plot.png"
-#plt.savefig(fig_path, dpi=300, bbox_inches='tight')
+fig_path = "Figures/kalkbrennerveien_original_plot.png"
+plt.savefig(fig_path, dpi=300, bbox_inches='tight')
 plt.show()
 
 print(f"Plot lagret til: {fig_path}")
