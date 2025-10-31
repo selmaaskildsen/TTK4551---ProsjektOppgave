@@ -73,7 +73,7 @@ class BicycleModel:
 # --- 3. PID Controller for path following ---
 # ======================================================
 class PIDController:
-    def __init__(self, Kp=100, Ki=0, Kd=0):
+    def __init__(self, Kp=1000, Ki=10, Kd=100):
         self.Kp = Kp
         self.Ki = Ki
         self.Kd = Kd
@@ -102,11 +102,11 @@ def pid_path_control(state, path_x, path_y, path_yaw, pid, dt):
     cte = np.sin(target_yaw) * (x - map_x) - np.cos(target_yaw) * (y - map_y)
 
     # Bruk PID på summen av heading + cte
-    total_error = heading_error + 0.3 * cte
+    total_error = heading_error + 1.2 * cte
     delta = pid.control(total_error, dt)
 
     # Begrens styringen (for realisme)
-    delta = np.clip(delta, -np.radians(30), np.radians(30))
+    delta = np.clip(delta, -np.radians(65), np.radians(65))
     return delta, idx, heading_error, cte
 
 # ======================================================

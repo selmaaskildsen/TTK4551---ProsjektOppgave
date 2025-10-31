@@ -1,91 +1,63 @@
-"""
-Henter og plotter veg fra NVDB.
-Setter startpunkt (m0) som origo, og slår sammen alle sekvenser i riktig rekkefølge.
-"""
+# -------------------------------------------------------
+# NVDB geometry over real map (OpenStreetMap)
+# -------------------------------------------------------
 
-import os
-import requests
-import numpy as np
-import matplotlib.pyplot as plt
-from shapely import wkt
 import pandas as pd
-import json
+import geopandas as gpd
+import matplotlib.pyplot as plt
+import contextily as ctx
 
 # -------------------------------------------------------
-# 1. API-kall til NVDB
+# 1. Read NVDB coordinates from your CSV file
 # -------------------------------------------------------
-url = "https://nvdbapiles.atlas.vegvesen.no/vegnett/api/v4/veglenkesekvenser"
-params = {
-    "vegsystemreferanse": "KV1698",  # Kalkbrennerveien
-    "kommune": "3201"                # Bærum
-}
+csv_path = "Figures/kalkbrennerveien_points.csv"
+df = pd.read_csv(csv_path)
 
-resp = requests.get(url, params=params)
-resp.raise_for_status()
-data = resp.json()
+# The CSV file contains normalized coordinates (x, y) relative to m0 = (0, 0)
+# To place them correctly on a map, we need to add back the original UTM offset.
+# Replace these with the values printed from your earlier script:
+x0 = 596437.4   # Example: original NVDB UTM-Easting of m0
+y0 = 6642018.3  # Example: original NVDB UTM-Northing of m0
 
-if "objekter" not in data or len(data["objekter"]) == 0:
-    raise ValueError("Ingen objekter funnet. Sjekk vegsystemreferanse eller kommune.")
-
-# -------------------------------------------------------
-# 2. Hent og sorter veglenker etter startposisjon
-# -------------------------------------------------------
-alle_segmenter = []
-
-for item in data["objekter"]:
-    for veglenke in item["veglenker"]:
-        geom = veglenke["geometri"]["wkt"]
-        if not geom or not geom.startswith("LINESTRING"):
-            continue
-
-        # hent startposisjon, default=0 om ikke finnes
-        startpos = veglenke.get("startposisjon", 0)
-        line = wkt.loads(geom)
-        x, y = line.xy
-        segment = list(zip(x, y))
-        alle_segmenter.append((startpos, segment))
-
-# Sorter etter startposisjon langs vegen
-alle_segmenter.sort(key=lambda s: s[0])
-
-# Slå sammen alle punkter i rekkefølge
-vei = [p for _, segment in alle_segmenter for p in segment]
+# Shift coordinates back to absolute UTM
+df["x_abs"] = df["x"] + x0
+df["y_abs"] = df["y"] + y0
 
 # -------------------------------------------------------
-# 3. Konverter til NumPy og normaliser (sett m0 = origo)
+# 2. Convert to GeoDataFrame (EPSG:25833 = UTM zone 33)
 # -------------------------------------------------------
-x = np.array([p[0] for p in vei])
-y = np.array([p[1] for p in vei])
+gdf = gpd.GeoDataFrame(
+    df, geometry=gpd.points_from_xy(df["x_abs"], df["y_abs"]), crs="EPSG:25833"
+)
 
-"""
-x0, y0 = x[0], y[0]
-x -= x0
-y -= y0
-
-print(f"Origo satt til (x0, y0) = ({x0:.1f}, {y0:.1f})")
-"""
-# -------------------------------------------------------
-# 4. Lagre koordinater til CSV
-# -------------------------------------------------------
-os.makedirs("Figures", exist_ok=True)
-df = pd.DataFrame({"x": x, "y": y})
-csv_path = "Figures/rytterfaret_original_points.csv"
-df.to_csv(csv_path, index=False)
-print(f"Koordinater lagret til: {csv_path}")
+# Optionally, connect points into a LineString for a cleaner plot
+road_line = gdf.unary_union.convex_hull
+gdf_line = gpd.GeoSeries([road_line], crs="EPSG:25833")
 
 # -------------------------------------------------------
-# 5. Plot bane
+# 3. Plot over OpenStreetMap basemap
 # -------------------------------------------------------
-plt.figure(figsize=(7,6))
-plt.plot(x, y, '-', linewidth=1)
-plt.axis('equal')
-plt.xlabel("x [m]")
-plt.ylabel("y [m]")
-plt.title("Rytterfaret – NVDB-data")
-plt.grid(True)
+fig, ax = plt.subplots(figsize=(8, 8))
 
-fig_path = "Figures/rytterfaret_original_plot.png"
-plt.savefig(fig_path, dpi=300, bbox_inches='tight')
+# Plot the NVDB road geometry
+gdf.plot(ax=ax, color="red", markersize=6, label="NVDB points")
+gdf_line.plot(ax=ax, color="darkred", linewidth=1.5, label="Interpolated road")
+
+# Add OpenStreetMap background
+ctx.add_basemap(ax, crs=gdf.crs.to_string(), source=ctx.providers.OpenStreetMap.Mapnik)
+
+# Styling
+ax.set_title("Kalkbrennerveien – NVDB geometry over OpenStreetMap", fontsize=12)
+ax.set_xlabel("Easting [m]")
+ax.set_ylabel("Northing [m]")
+ax.legend()
+plt.tight_layout()
+
+# -------------------------------------------------------
+# 4. Save figure
+# -------------------------------------------------------
+fig_path = "Figures/kalkbrennerveien_map.png"
+#plt.savefig(fig_path, dpi=300, bbox_inches="tight")
 plt.show()
 
-print(f"Plot lagret til: {fig_path}")
+print(f"Map figure saved to: {fig_path}")
