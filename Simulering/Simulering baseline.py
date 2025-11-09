@@ -68,7 +68,7 @@ class StanleyController:
 if __name__ == "__main__":
 
     # Lag veipunkter
-    waypoints = np.array([[0,0],[20,0],[20,10],[0,10],[0,0]])
+    waypoints = np.array([[0,0],[5,5],[10,10],[15,5],[20,0],[25,5],[30,10],[35,5],[40,0]])
     model = BicycleModel()
     ctrl = StanleyController(k=1.2) 
 
@@ -89,8 +89,17 @@ if __name__ == "__main__":
 # --- Plotting ---
 plt.figure(); plt.plot(waypoints[:,0], waypoints[:,1],'ro--',label="Path")
 plt.plot(log["x"], log["y"],'b',label="Vehicle"); plt.legend(); plt.axis("equal")
+fig_path = "Figures/trajectory.png"
+plt.savefig(fig_path, dpi=300, bbox_inches='tight')
 
 plt.figure(); plt.plot(log["cte"]); plt.title("Cross-Track Error")
+fig_path = "Figures/cross_track_error.png"
+plt.savefig(fig_path, dpi=300, bbox_inches='tight')
 plt.figure(); plt.plot(log["psi"]); plt.title("Heading Error [deg]")
+fig_path = "Figures/heading_error.png"
+plt.savefig(fig_path, dpi=300, bbox_inches='tight')
 plt.figure(); plt.plot(np.rad2deg(log["delta"])); plt.title("Steering [deg]")
+fig_path = "Figures/steering.png"
+plt.savefig(fig_path, dpi=300, bbox_inches='tight')
 plt.show()
+

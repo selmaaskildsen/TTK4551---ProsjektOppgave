@@ -93,6 +93,10 @@ s_vals = np.linspace(0, dist[-1], 500)
 x_smooth = spline_x(s_vals)
 y_smooth = spline_y(s_vals)
 
+print(x_smooth)
+print(y_smooth)
+
+"""
 # -------------------------------------------------------
 # 6. Lagre koordinater til CSV
 # -------------------------------------------------------
@@ -125,3 +129,4 @@ plt.savefig(fig_path, dpi=300, bbox_inches='tight')
 plt.show()
 
 print(f"Plot lagret til: {fig_path}")
+"""

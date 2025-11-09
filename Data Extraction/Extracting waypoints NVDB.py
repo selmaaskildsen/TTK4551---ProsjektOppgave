@@ -11,7 +11,7 @@ import json
 # -------------------------------------------------------
 url = "https://nvdbapiles.atlas.vegvesen.no/vegnett/api/v4/veglenkesekvenser"
 params = {
-    "vegsystemreferanse": "KV1531",  # Kalkbrennerveien
+    "vegsystemreferanse": "KV1548",  # Kalkbrennerveien
     "kommune": "3201"                # Bærum
 }
 
@@ -71,7 +71,7 @@ print(f"Koordinater lagret til: {csv_path}")
 # 5. Plot bane
 # -------------------------------------------------------
 plt.figure(figsize=(7,6))
-plt.plot(x, y, ':', linewidth=1)
+plt.plot(x, y, '.', linewidth=1)
 plt.axis('equal')
 plt.xlabel("x [m]")
 plt.ylabel("y [m]")
